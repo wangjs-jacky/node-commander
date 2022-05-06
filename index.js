@@ -24,7 +24,8 @@ function createTask(todoList) {
     inquirer.prompt({
         type: "input",
         name: "title",
-        message: "输入任务标题"
+        message: "输入任务标题",
+        default: `任务${Math.floor(100 * Math.random())}`
     }).then(({ title }) => {
         todoList.push({
             title: title,
@@ -38,16 +39,17 @@ function operateTask(todoList, index) {
     const question = {
         type: "list",
         name: "actionIndex",
-        message: "请选择操作",
+        message: "请对选择的任务进行以下操作",
         choices: [
             { name: "退出", value: "quit" },
+            new inquirer.Separator(),
             { name: "已完成", value: "markAsDone" },
             { name: "未完成", value: "markAsUndone" },
             { name: "改标题", value: "updateTitle" },
             { name: "删除", value: "removeTask" }
         ]
     }
-   
+
     // 使用字面量的方式驱动
     const actions = {
         markAsDone: function markAsDone(todoList, index) {
@@ -86,7 +88,7 @@ function printTasks(todoList) {
     })
     const question = {
         type: "list",
-        name: "index",
+        name: "todoListIndex",
         message: "请选择你想要的操作",
         choices: [
             { name: "退出", value: "-1" },
@@ -95,15 +97,16 @@ function printTasks(todoList) {
             ...optionList
         ]
     }
-
     inquirer
         .prompt(question)
-        .then(({ index }) => {
-            if (index === "-1") return;
-            if (index === "-2") {
+        .then(({ todoListIndex }) => {
+            if (todoListIndex === "-1") {
+                return;
+            };
+            if (todoListIndex === "-2") {
                 createTask(todoList);
                 return;
             }
-            operateTask(todoList, index);
+            operateTask(todoList, todoListIndex);
         })
 }
