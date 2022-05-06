@@ -11,9 +11,7 @@ program
   .argument("<tasks...>", "taskName")
   .description("add a task")
   .action((tasks) => {
-    tasks.forEach(task => {
-      api.add(task);
-    });
+    api.add(tasks)
   })
 
 program

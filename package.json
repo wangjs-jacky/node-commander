@@ -1,6 +1,6 @@
 {
   "name": "node-cli-jacky",
-  "version": "0.0.4",
+  "version": "0.0.9",
   "description": "脚手架初步上手",
   "author": "Jacky-wang",
   "license": "ISC",
@@ -8,7 +8,7 @@
     "t": "cli.js"
   },
   "files": [
-    "*.js"
+    "*.js","data"
   ],
   "main": "index.js",
   "dependencies": {

@@ -5,10 +5,9 @@ const dbPath = path.join(__dirname, 'data', "todo")
 const db = require("./db");
 const inquirer = require("inquirer");
 
-module.exports.add = async (title) => {
+module.exports.add = async (titleList) => {
     const todoList = await db.readFromFile(dbPath);
-    todoList.push({ title, done: false });
-    db.writeToFile(todoList, dbPath);
+    db.writeToFile([...todoList, ...titleList.map(title => ({ title, done: false }))], dbPath);
 }
 
 module.exports.clear = () => {
