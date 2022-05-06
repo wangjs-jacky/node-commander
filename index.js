@@ -52,26 +52,16 @@ function operateTask(todoList, index) {
             case "quit":
                 break;
             case "markAsDone":
-                todoList[index]["done"] = true;
-                db.writeToFile(todoList);
+                markAsUndone(todoList, index);
                 break;
             case "markAsUndone":
-                todoList[index]["done"] = false;
-                db.writeToFile(todoList);
+                markAsDone(todoList, index);
                 break;
             case "updateTitle":
-                inquirer.prompt({
-                    type: "input",
-                    name: "title",
-                    message: "更新任务标题"
-                }).then(({ title }) => {
-                    todoList[index]["title"] = title;
-                    db.writeToFile(todoList);
-                })
+                updateTitle(todoList, index)
                 break;
-            case "remove":
-                todoList.splice(index, 1)
-                db.writeToFile(todoList);
+            case "removeTask":
+                removeTask(todoList, index)
                 break;
             default:
                 break;
@@ -104,4 +94,30 @@ function printTasks(todoList) {
             }
             operateTask(todoList, index);
         })
+}
+
+function removeTask(todoList, index) {
+    todoList.splice(index, 1)
+    db.writeToFile(todoList);
+}
+
+function updateTitle(todoList, index) {
+    inquirer.prompt({
+        type: "input",
+        name: "title",
+        message: "更新任务标题"
+    }).then(({ title }) => {
+        todoList[index]["title"] = title;
+        db.writeToFile(todoList);
+    })
+}
+
+function markAsDone(todoList, index) {
+    todoList[index]["done"] = true;
+    db.writeToFile(todoList);
+}
+
+function markAsUndone(todoList, index) {
+    todoList[index]["done"] = false;
+    db.writeToFile(todoList);
 }
