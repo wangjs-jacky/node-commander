@@ -17,10 +17,71 @@ module.exports.clear = () => {
 
 module.exports.showAllTasks = async () => {
     const todoList = await db.readFromFile(dbPath);
+    printTasks(todoList);
+}
+
+function createTask(todoList) {
+    inquirer.prompt({
+        type: "input",
+        name: "title",
+        message: "输入任务标题"
+    }).then(({ title }) => {
+        todoList.push({
+            title: title,
+            done: false
+        })
+        db.writeToFile(todoList)
+    })
+}
+
+function operateTask(todoList, index) {
+    const question = {
+        type: "list",
+        name: "actionIndex",
+        message: "请选择操作",
+        choices: [
+            { name: "退出", value: "quit" },
+            { name: "已完成", value: "markAsDone" },
+            { name: "未完成", value: "markAsUndone" },
+            { name: "改标题", value: "updateTitle" },
+            { name: "删除", value: "remove" }
+        ]
+    }
+    inquirer.prompt(question).then(({ actionIndex }) => {
+        switch (actionIndex) {
+            case "quit":
+                break;
+            case "markAsDone":
+                todoList[index]["done"] = true;
+                db.writeToFile(todoList);
+                break;
+            case "markAsUndone":
+                todoList[index]["done"] = false;
+                db.writeToFile(todoList);
+                break;
+            case "updateTitle":
+                inquirer.prompt({
+                    type: "input",
+                    name: "title",
+                    message: "更新任务标题"
+                }).then(({ title }) => {
+                    todoList[index]["title"] = title;
+                    db.writeToFile(todoList);
+                })
+                break;
+            case "remove":
+                todoList.splice(index, 1)
+                db.writeToFile(todoList);
+                break;
+            default:
+                break;
+        }
+    })
+}
+function printTasks(todoList) {
     let optionList = todoList.map((todo, index) => {
         return { name: `${todo.done ? "[x]" : "[_]"} ${todo.title}`, value: index.toString() }
     })
-    console.log("optionList", optionList);
     const question = {
         type: "list",
         name: "index",
@@ -36,64 +97,11 @@ module.exports.showAllTasks = async () => {
     inquirer
         .prompt(question)
         .then(({ index }) => {
+            if (index === "-1") return;
             if (index === "-2") {
-                inquirer.prompt({
-                    type: "input",
-                    name: "title",
-                    message: "输入任务标题"
-                }).then(({ title }) => {
-                    todoList.push({
-                        title: title,
-                        done: false
-                    })
-                    db.writeToFile(todoList)
-                })
+                createTask(todoList);
                 return;
             }
-            if (index === "-1") {
-                return;
-            }
-            const question = {
-                type: "list",
-                name: "actionIndex",
-                message: "请选择操作",
-                choices: [
-                    { name: "退出", value: "quit" },
-                    { name: "已完成", value: "markAsDone" },
-                    { name: "未完成", value: "markAsUndone" },
-                    { name: "改标题", value: "updateTitle" },
-                    { name: "删除", value: "remove" }
-                ]
-            }
-            inquirer.prompt(question).then(({ actionIndex }) => {
-                switch (actionIndex) {
-                    case "quit":
-                        break;
-                    case "markAsDone":
-                        todoList[index]["done"] = true;
-                        db.writeToFile(todoList);
-                        break;
-                    case "markAsUndone":
-                        todoList[index]["done"] = false;
-                        db.writeToFile(todoList);
-                        break;
-                    case "updateTitle":
-                        inquirer.prompt({
-                            type: "input",
-                            name: "title",
-                            message: "更新任务标题"
-                        }).then(({ title }) => {
-                            todoList[index]["title"] = title;
-                            db.writeToFile(todoList);
-                        })
-                        break;
-                    case "remove":
-                        todoList.splice(index, 1)
-                        db.writeToFile(todoList);
-                        break;
-                    default:
-                        break;
-                }
-            })
+            operateTask(todoList, index);
         })
 }
