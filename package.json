@@ -1,9 +1,15 @@
 {
-  "name": "commander",
+  "name": "node-cli-jacky",
   "version": "0.0.1",
   "description": "脚手架初步上手",
   "author": "Jacky-wang",
   "license": "ISC",
+  "bin": {
+    "t": "cli.js"
+  },
+  "files": [
+    "*.js"
+  ],
   "main": "index.js",
   "dependencies": {
     "commander": "^9.2.0",
