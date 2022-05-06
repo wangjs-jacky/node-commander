@@ -44,30 +44,42 @@ function operateTask(todoList, index) {
             { name: "已完成", value: "markAsDone" },
             { name: "未完成", value: "markAsUndone" },
             { name: "改标题", value: "updateTitle" },
-            { name: "删除", value: "remove" }
+            { name: "删除", value: "removeTask" }
         ]
     }
-    inquirer.prompt(question).then(({ actionIndex }) => {
-        switch (actionIndex) {
-            case "quit":
-                break;
-            case "markAsDone":
-                markAsUndone(todoList, index);
-                break;
-            case "markAsUndone":
-                markAsDone(todoList, index);
-                break;
-            case "updateTitle":
-                updateTitle(todoList, index)
-                break;
-            case "removeTask":
-                removeTask(todoList, index)
-                break;
-            default:
-                break;
+   
+    // 使用字面量的方式驱动
+    const actions = {
+        markAsDone: function markAsDone(todoList, index) {
+            todoList[index]["done"] = true;
+            db.writeToFile(todoList);
+        },
+        markAsUndone: function markAsUndone(todoList, index) {
+            todoList[index]["done"] = false;
+            db.writeToFile(todoList);
+        },
+        updateTitle: function updateTitle(todoList, index) {
+            inquirer.prompt({
+                type: "input",
+                name: "title",
+                message: "更新任务标题"
+            }).then(({ title }) => {
+                todoList[index]["title"] = title;
+                db.writeToFile(todoList);
+            })
+        },
+        removeTask: function removeTask(todoList, index) {
+            todoList.splice(index, 1)
+            db.writeToFile(todoList);
         }
+    };
+
+    inquirer.prompt(question).then(({ actionIndex }) => {
+        if (actionIndex === "quit") return;
+        actions[actionIndex](todoList, index);
     })
 }
+
 function printTasks(todoList) {
     let optionList = todoList.map((todo, index) => {
         return { name: `${todo.done ? "[x]" : "[_]"} ${todo.title}`, value: index.toString() }
@@ -94,30 +106,4 @@ function printTasks(todoList) {
             }
             operateTask(todoList, index);
         })
-}
-
-function removeTask(todoList, index) {
-    todoList.splice(index, 1)
-    db.writeToFile(todoList);
-}
-
-function updateTitle(todoList, index) {
-    inquirer.prompt({
-        type: "input",
-        name: "title",
-        message: "更新任务标题"
-    }).then(({ title }) => {
-        todoList[index]["title"] = title;
-        db.writeToFile(todoList);
-    })
-}
-
-function markAsDone(todoList, index) {
-    todoList[index]["done"] = true;
-    db.writeToFile(todoList);
-}
-
-function markAsUndone(todoList, index) {
-    todoList[index]["done"] = false;
-    db.writeToFile(todoList);
 }
