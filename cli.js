@@ -14,9 +14,16 @@ program
 
 program
   .command("clear")
-  .description("clear a task")
+  .description("clear all tasks")
   .action(() => {
-    console.log("清空");
+    api.clear();
+  })
+
+program
+  .command("showAllTasks")
+  .description("show all tasks")
+  .action(() => {
+    api.showAllTasks()
   })
 
 program.parse()
