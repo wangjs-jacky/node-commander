@@ -1,6 +1,10 @@
+#!/usr/bin/env node
 const commander = require('commander');
 const program = new commander.Command();
 const api = require("./index");
+const pkg = require("./package.json")
+
+program.version(pkg.version);
 
 program
   .command("add")
