@@ -32,7 +32,6 @@ module.exports = {
                     reject(err);
                 }
                 resolve();
-                this.catFile();
             })
         })
     },
